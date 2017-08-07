@@ -1,18 +1,40 @@
 ##  cstring
-```
+
+```cpp
 #include <cstring>
 ```
 
-`char a[50]`
-`cin>>a;`
-`scanf("%s",a);`
+```cpp
+char a[50]
+```
 
-`strlen(a);`
+```cpp
+cin>>a;
+```
+
+```cpp
+scanf("%s",a);
+```
+
+```cpp
+strlen(a);
+```
+
 ```cpp
 char a[50];
 char b[50];
 strcmp(a,b);
 ```
 
-`memcpy(b,a,sizeof(a));`
+```cpp
+memcpy(b,a,sizeof(a));
+```
+## string
 
+```cpp
+std::string str;
+```
+
+```cpp
+str=string("abcdefg")+"hijk";
+```
