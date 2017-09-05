@@ -84,25 +84,28 @@ updated on 2017/09/04
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-#define MAXN 500001
+
+#define maxn 1000001
+
 
 int N,M,root;
-vector<int>mapn[MAXN];
+vector<int>mapn[maxn];
+
 vector<int>dfs_list;
-int dfn[MAXN];
-bool vis[MAXN];
-int first_pos[MAXN];
-int last_pos[MAXN];
+
+int dfn[maxn];
+bool vis[maxn];
+int first_pos[maxn];
 int defaultdfn=1;
-int _M[MAXN][25];
-int another_dfn[MAXN];
-
-
+int _M[maxn][21];
+int another_dfn[maxn];
 void process();
 void process2();
 int getmin(int a,int b);
 void connect();
 void dfs(int i);
+
+
 
 int main()
 {
@@ -120,6 +123,8 @@ int main()
     }
 }
 
+
+
 void connect()
 {
     int x,y;
@@ -127,6 +132,8 @@ void connect()
     mapn[x].push_back(y);
     mapn[y].push_back(x);
 }
+
+
 
 void dfs(int i)
 {
@@ -145,7 +152,6 @@ void dfs(int i)
             dfs_list.push_back(dfn[i]);
         }
     }
-    last_pos[dfn[i]]=dfs_list.size()-1;
 }
 
 void process2()
@@ -158,7 +164,7 @@ void process2()
     {
         swap(x,y);
     }
-    x=first_pos[x];y=last_pos[y];
+    x=first_pos[x];y=first_pos[y];
 
     cout<<another_dfn[getmin(x,y)]<<endl;
 }
