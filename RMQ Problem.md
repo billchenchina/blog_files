@@ -1,5 +1,9 @@
 # RMQ 问题及解决算法
 
+> By [Billchenchina](https://billchen.bid/)
+> 
+> The newest version can be found [here](https://github.com/billchenchina/blog_files/blob/master/RMQ%20Problem.md)
+
 ## RMQ 问题
 
 RMQ 问题，即区间最值查询，是在长度为 N 的序列中求出其连续的子序列中最大/最小值的问题。
@@ -12,7 +16,7 @@ ST 算法适用于解决 RMQ 问题，是一个较长时间预处理，（时间
 
 ### 算法思想及类型
 
-算法思想为二分，将序列经过多次二分使最终区间为一个单位，类似线段树，本质为动态规划。
+算法思想为`人人为我 我为人人`，本质为动态规划。
 
 实现顺序为：
 
@@ -20,16 +24,11 @@ ST 算法适用于解决 RMQ 问题，是一个较长时间预处理，（时间
 
 2. 逐渐增大区间大小（每次乘二），利用其两个子连续区间动态规划出这次计算的区间的最大/最小值
 
-如图
-> 图片貌似有点小问题...现画吧
-![graph.png](./RMQ%20Problem/graph.png)
-
-(Thanks to [Ferric](https://ferric.cf) and Graphviz)
+这里`M[i][j]`的最值即为`[i,i+1-(2^j)]`的最值，也就是`[i,i+1-(2^(j-1))]`的最值和`[i+(2^(j-1)),i+1-(2^j)]`最值的max/min，所以可以这么DP
 
 ### 代码实现
 
-(from [https://www.topcoder.com/community/data-science/data-science-tutorials/range-minimum-query-and-lowest-common-ancestor/](https://www.topcoder.com/community/data-science/data-science-tutorials/range-minimum-query-and-lowest-common-ancestor/) )
-
+（from [TopCoder](https://www.topcoder.com/community/data-science/data-science-tutorials/range-minimum-query-and-lowest-common-ancestor/)）
 
 ```cpp
 void process2(int M[MAXN][LOGMAXN], int A[MAXN], int N) {
@@ -59,27 +58,28 @@ int N: A的长度
 
 ### 求区间最值（O(1)）
 
-当求 [a,b] 区间最值时，应找到小于 a 的 2^k（记 max1(min1)为 M[a][k]）和 比 b 小 2^k 的值（记为d）（记 max2(min2)为M[d][k]），再求出 ans=max(max1,max2)（或 ans=min(min1,min2)）
+当求 [a,b] 区间最值时，应找到两个长度为2^k的重叠区间，使得第一个区间的初始位置为 a，第二个区间的结尾位置为 b。那么第一个区间的最值即为`M[a][k]`，第二个区间最值为`M[b+1-2^k][k]`，再求出 `ans=max(max1,max2)`（或 `ans=min(min1,min2)`）
 
-需要注意的是，上面求的 M[a][k] 和 M[d][k] 有可能有重叠部分，但是由于查询时间复杂度为 O(1) ，这里可以忽略
+需要注意的是，上面求的 M[a][k] 和 M[d][k] 虽然有可能有重叠部分，但是由于查询时间复杂度为 常数，这里可以忽略
 
 ### 例题
 
 #### [POJ 3264](http://poj.org/problem?id=3264)
 
- > 这道题是个奇葩题？（大雾）
+ > 这道题是个奇葩题？
  >
- > 在 OpenJudge上的 [这道题](http://hljssyzx.openjudge.cn/bitseg/1002/)（如链接不可用，百度搜全局题号2439）线段树可过，POJ 却过不了
+ > 在 OpenJudge上的 [这道题](http://hljssyzx.openjudge.cn/bitseg/1002/) 线段树可过，POJ 却过不了
  >
  > 几乎就是模板题？（大雾
 
-updated on 2017/09/04
-
 #### [Luogu 3379](https://www.luogu.org/problem/show?pid=3379)
 
-> err...不太友好的一点是卡`vector`
+这个题是树的题，需要从根节点把dfs序记录下来并转成欧拉序，对欧拉序做区间最小值查询即为最近公共祖先。
 
-其他的还好...直接上代码
+> err...不太友好的一点是卡`vector`，所以我换成链式前向星了
+>
+> 啥？链式前向星也卡？链式前向星+快速妥妥的A
+
 
 ```cpp
 #include <bits/stdc++.h>
@@ -87,39 +87,54 @@ using namespace std;
 
 #define maxn 1000001
 
+struct edge
+{
+    int to;
+    int next;
+};
+edge edges[maxn];
+int edges_size=0;
+int first[maxn];
 
 int N,M,root;
-vector<int>mapn[maxn];
 
-vector<int>dfs_list;
-
+int dfs_list[maxn];
+int dfs_list_size=0;
 int dfn[maxn];
 bool vis[maxn];
 int first_pos[maxn];
 int defaultdfn=1;
 int _M[maxn][21];
 int another_dfn[maxn];
+void preprocess();
 void process();
-void process2();
 int getmin(int a,int b);
 void connect();
 void dfs(int i);
-
-
+// 快速读入
+int read()
+{
+    int x=0,f=1;char c=getchar();
+    while(c<'0'||c>'9'){if(c=='-')f=-1;c=getchar();}
+    while(c>='0'&&c<='9'){x=x*10+c-'0';c=getchar();}
+    return x*f;
+}
 
 int main()
 {
-    cin>>N>>M>>root;
+    memset(first,-1,sizeof first);
+    N=read();M=read();root=read();
+    //cin>>N>>M>>root;
     for(int i=0; i<N-1; ++i)
     {
         connect();
     }
     dfs(root);
 
-    process();
+    preprocess();
     for(int i=0; i<M; ++i)
     {
-        process2();
+        process();
     }
 }
 
@@ -128,9 +143,14 @@ int main()
 void connect()
 {
     int x,y;
-    cin>>x>>y;
-    mapn[x].push_back(y);
-    mapn[y].push_back(x);
+    x=read();y=read();
+    //cin>>x>>y;
+    edges[edges_size].to=y;
+    edges[edges_size].next=first[x];
+    first[x]=edges_size++;
+    edges[edges_size].to=x;
+    edges[edges_size].next=first[y];
+    first[y]=edges_size++;
 }
 
 
@@ -138,26 +158,26 @@ void connect()
 void dfs(int i)
 {
     vis[i]=1;
-    int vsize=mapn[i].size();
     dfn[i]=defaultdfn++;
     another_dfn[dfn[i]]=i;
-    dfs_list.push_back(dfn[i]);
-    first_pos[dfn[i]]=dfs_list.size()-1;
-    for(int j=0; j<vsize; ++j)
+    dfs_list[dfs_list_size++]=dfn[i];
+    first_pos[dfn[i]]=dfs_list_size-1;
+    for(int j=first[i]; j!=-1; j=edges[j].next)
     {
-        int nextp=mapn[i][j];
+        int nextp=edges[j].to;
         if(!vis[nextp])
         {
             dfs(nextp);
-            dfs_list.push_back(dfn[i]);
+            dfs_list[dfs_list_size++]=dfn[i];
         }
     }
 }
 
-void process2()
+void process()
 {
     int x,y;
-    cin>>x>>y;
+    //cin>>x>>y;
+    x=read();y=read();
     x=dfn[x];
     y=dfn[y];
     if(x>y)
@@ -165,8 +185,8 @@ void process2()
         swap(x,y);
     }
     x=first_pos[x];y=first_pos[y];
-
-    cout<<another_dfn[getmin(x,y)]<<endl;
+    printf("%d\n",another_dfn[getmin(x,y)]);
+    //cout<<another_dfn[getmin(x,y)]<<endl;
 }
 
 int getmin(int a,int b)
@@ -175,7 +195,7 @@ int getmin(int a,int b)
     if((b-a+1)&(b-a))
     {
         int min1=dfs_list[_M[a][k]];
-        int min2=dfs_list[_M[b-(1<<(k))][k]];
+        int min2=dfs_list[_M[b+1-(1<<(k))][k]];
         return min1<min2?min1:min2;
     }
     else
@@ -184,9 +204,9 @@ int getmin(int a,int b)
     }
 }
 
-void process() {
-    vector<int>&A=dfs_list;
-    int N=A.size();
+void preprocess() {
+    int *A=dfs_list;
+    int N=dfs_list_size;
     int i, j;
     for (i = 0; i < N; i++)
         _M[i][0] = i;
@@ -198,4 +218,3 @@ void process() {
                 _M[i][j] = _M[i + (1 << (j - 1))][j - 1];
 }
 ```
-
