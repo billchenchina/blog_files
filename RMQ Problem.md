@@ -21,7 +21,7 @@ ST 算法适用于解决 RMQ 问题，是一个较长时间预处理，（时间
 2. 逐渐增大区间大小（每次乘二），利用其两个子连续区间动态规划出这次计算的区间的最大/最小值
 
 如图
-
+> 图片貌似有点小问题...现画吧
 ![graph.png](./RMQ%20Problem/graph.png)
 
 (Thanks to [Ferric](https://ferric.cf) and Graphviz)
