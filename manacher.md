@@ -10,7 +10,7 @@ err...好的博客真的难找。。。
 
 [Manacher's ALGORITHM: O(n)时间求字符串的最长回文子串 - Felix021 - 将所有欢脱倾翻](https://www.felix021.com/blog/read.php?2040)
 
-## 代码（HDOJ居然挂了。。。还没测试对不对呢
+## 代码（测试通过，HDOJ 22435494
 
 ```cpp
 #include <bits/stdc++.h>
@@ -21,7 +21,7 @@ int main()
 {
     string str;
     int P[110010*2];
-    while(getline(cin,str))
+    while(cin>>str)
     {
     if(str.length()==0)break;
     string str2="$#";
