@@ -49,7 +49,9 @@ int main()
 
 ### 缺点呢？
 
-可以算算内存：`1e4 * 1e4 * 4 /( 1024 * 1024) = 381M`
+不能高效的从某一个点往其它点延伸，因为想要延伸的话需要把所有点都扫一遍，看看相不相连。
+
+而且可以算算内存：`1e4 * 1e4 * 4 /( 1024 * 1024) = 381M`
 
 然而多数题是`128M`内存的...这么做会爆炸...
 
@@ -67,22 +69,41 @@ int main()
 using namespace std;
 
 const int MAXN = 1e4+10;
-vector<int> mapn[MAXN];
+
+struct Edge
+{
+    int from;
+    int to;
+    int weight;
+    Edge(int f,int t,int w)
+    {
+        this->from=f;
+        this->to=t;
+        this->weight=w;
+    }
+    Edge(){}
+};
+
+vector<Edge> mapn[MAXN];
 int N,M,S;
 // 加边
-void addEdge(int a,int b)
+void addEdge(int a,int b,int w)
 {
-    mapn[a].push_back(b);
+    mapn[a].push_back(Edge(a,b,w));
 }
 
 // main()与上边一样，省略
 ```
+
+### 什么意思？没看懂？
+
+对于图中的每一个点建立一个vector，将每一条以这个点为出口的边都放到这个vector里。
+
 ### 有什么优点？
 
-- 省内存。可以计算出这个程序存储图所用空间最大大致为`边数*4/(1024*1024)` 即1.9M左右
+- 省内存。可以计算出这个程序存储图所用空间最大大致为`边数*12/(1024*1024)` 即6M左右
 
 ### 缺点呢？
 
 和上边二维数组比没有缺点了吧...但是一些<del>毒瘤出题人</del>还是会卡这种做法 所以才有了下面的存图方法
 
-(To be continued)
